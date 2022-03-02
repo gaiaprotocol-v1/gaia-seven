@@ -5,7 +5,6 @@ import cors from "cors";
 import helmet from "helmet";
 import indexRouter from './routes/index';
 
-import './loaders/mongoose';
 import './loaders/discord';
 
 dotenv.config();

@@ -7,6 +7,7 @@ const discordServiceInstance = Container.get(DiscordService);
 
 client.once('ready', () => {
     discordServiceInstance.setCommand();
+    discordServiceInstance.createGenesis();
     console.log(`Logged in as ${client.user?.tag}`);
 });
 
