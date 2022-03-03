@@ -1,14 +1,21 @@
-import { Client, Intents } from "discord.js";
+import { Client, Collection, Intents } from "discord.js";
 import { Container } from 'typedi'
 import DiscordService from "../services/discord";
+import { logger } from '../config/winston';
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
+const currency = new Collection();
 const discordServiceInstance = Container.get(DiscordService);
 
 client.once('ready', () => {
     discordServiceInstance.setCommand();
     discordServiceInstance.createGenesis();
-    console.log(`Logged in as ${client.user?.tag}`);
+    logger.info(`Logged in as ${client.user?.tag}`);
+});
+
+client.on('messageCreate', async message => {
+    if (message.author.bot) return;
+    // currency.add(message.author.id, 1);
 });
 
 client.on('interactionCreate', async interaction => {

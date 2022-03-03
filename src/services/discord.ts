@@ -2,6 +2,7 @@ import { Service } from 'typedi';
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
+import { logger } from '../config/winston';
 
 @Service()
 export default class DiscordService {
@@ -9,7 +10,12 @@ export default class DiscordService {
     }
 
     async getLinkTree(interaction: any): Promise<void> {
-        await interaction.reply({ content: 'https://linktr.ee/gaia_protocol', ephemeral: true });
+        try {
+            await interaction.reply({ content: 'https://linktr.ee/gaia_protocol', ephemeral: true });
+            logger.info("getLinkTree")
+        } catch (err) {
+            logger.error(err);
+        }
     }
 
     async setCommand(): Promise<void> {
@@ -22,6 +28,8 @@ export default class DiscordService {
 
         rest.put(Routes.applicationGuildCommands(`${process.env.DISCORD_CLIENT_ID}`, `${process.env.DISCORD_GUILD_ID}`), { body: commands })
             .then(() => console.log('Successfully registered application commands.'))
-            .catch(console.error);
+            .catch((err) => {
+                logger.error(err)
+            });
     }
 }
