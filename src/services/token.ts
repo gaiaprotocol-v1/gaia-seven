@@ -1,4 +1,3 @@
-
 import { Service } from 'typedi';
 
 @Service()

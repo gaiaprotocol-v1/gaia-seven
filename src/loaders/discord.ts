@@ -1,17 +1,20 @@
-import { Client, Intents, Collection } from "discord.js";
+import { Client, Intents } from "discord.js";
 import { Container } from 'typedi'
 import { logger } from '../config/winston';
-import BinanceService from "../services/binance";
 import CommonService from "../services/common";
+import OpenseaService from "../services/opensea";
 import TokenService from "../services/token";
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] });
 
 const commonServiceInstance = Container.get(CommonService);
 const tokenServiceInstance = Container.get(TokenService);
-const binanceServiceInstance = Container.get(BinanceService);
+const openseaServiceInstance = Container.get(OpenseaService);
 
-client.once('ready', () => {
+client.once('ready', async () => {
+    const kronos = await openseaServiceInstance.getCollectionFP("gaia-kronos");
+    const supernova = await openseaServiceInstance.getCollectionFP("gaia-supernova");
+    client.user?.setActivity(`🗿 ${kronos} | 👺 ${supernova}`, ({ type: "PLAYING" }));
     commonServiceInstance.setCommand();
     commonServiceInstance.createGenesis();
     logger.info(`Logged in as ${client.user?.tag}`);
@@ -29,12 +32,6 @@ client.on('interactionCreate', async interaction => {
     switch (commandName) {
         case "링크":
             commonServiceInstance.getLinkTree(interaction);
-            break;
-        case "내정보":
-            // tokenServiceInstance.getBalance(interaction);
-            break;
-        case "가격":
-            binanceServiceInstance.getCandles("ETHBTC");
             break;
     }
 });
